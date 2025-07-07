@@ -11,6 +11,7 @@ interface Product {
   price: number;
   description: string;
   category: string;
+  subCategory?: string; // Added subCategory for consistency
   image: string;
   rating?: {
     rate: number;
@@ -50,15 +51,34 @@ const HomePage = () => {
   const handleAddToCart = (e, product) => {
     e.preventDefault();
     e.stopPropagation();
-    addToCart(product);
+    // For homepage, we assume no customizations are selected for featured products.
+    // If you want to allow customizations from homepage, you'd need to extend this logic.
+    addToCart({
+      id: product.id,
+      title: product.title,
+      price: product.onSale && product.salePrice !== undefined && product.salePrice < product.price
+        ? product.salePrice
+        : product.price,
+      image: product.image,
+      onSale: product.onSale,
+      salePrice: product.salePrice,
+      customizations: [], // No customizations from homepage featured section
+    });
     alert(`"${product.title}" added to cart!`);
   };
+
+  const HERO_IMAGE_URL = 'hero-image.jpeg'; // Replace with your actual image URL
 
   return (
     <div className="flex-grow">
       {/* Hero Section */}
-      <section className="bg-gradient-to-r from-emerald-600 to-emerald-800 text-white py-16 md:py-24 rounded-b-3xl shadow-xl mb-12">
-        <div className="container mx-auto px-4 md:px-8 text-center">
+      <section
+        className="relative bg-cover bg-center text-white py-16 md:py-24 rounded-b-3xl shadow-xl mb-12"
+        style={{ backgroundImage: `url('${HERO_IMAGE_URL}')` }}
+      >
+        {/* Overlay for better text readability */}
+        <div className="absolute inset-0 bg-emerald-800 opacity-70 rounded-b-3xl"></div>
+        <div className="container mx-auto px-4 md:px-8 text-center relative z-10"> {/* z-10 to bring text above overlay */}
           <h1 className="text-4xl md:text-6xl font-extrabold leading-tight mb-4 drop-shadow-lg">
             Handcrafted Treasures, Just For You
           </h1>
